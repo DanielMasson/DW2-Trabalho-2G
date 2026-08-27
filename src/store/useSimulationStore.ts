@@ -3,7 +3,7 @@ import { immer } from "zustand/middleware/immer";
 import { persist } from "zustand/middleware";
 
 import { buildInitialData, EMPRESA_A_PADRAO, EMPRESA_B_PADRAO } from "@/data/seed";
-import type { Aluno, Meta, SimulationState, TabKey, Weights } from "@/types";
+import type { Meta, SimulationState, TabKey, Weights } from "@/types";
 
 // =====================================================================
 // STORE GLOBAL DA SIMULAÇÃO
@@ -12,9 +12,9 @@ import type { Aluno, Meta, SimulationState, TabKey, Weights } from "@/types";
 // os setters específicos da sua aba, seguindo o mesmo padrão dos
 // existentes (mutação direta do draft via immer):
 //
-//   - Pessoa 2: setAlunoField / setAlunos (setup/alunos/escalação),
-//     integração com persistence.ts (usar `replaceState` para repor o
-//     STATE inteiro ao carregar um .json ou ao importar alunos do Excel).
+//   - Pessoa 2: setores de setup/alunos, integração com persistence.ts
+//     (usar `replaceState` para repor o STATE inteiro ao carregar um
+//     .json ou ao importar alunos do Excel).
 //   - Pessoa 3: setSmField, setOwnerField, setPoField, setDevField.
 //   - Pessoa 4: setBuyerProfField, setBuyerProductField, setCorrupcaoField,
 //     setSabotagemField, e resetAll() (+ a confirmação fica na camada de
@@ -58,12 +58,6 @@ export interface SimulationStore {
    * ou ao reimportar a lista de alunos via Excel.
    */
   replaceState: (newState: SimulationState, fileName?: string) => void;
-
-  // ---- setters da aba Alunos (Pessoa 2) -------------------------------
-  /** Atualiza um campo de um aluno específico (papel, empresa ou time). */
-  setAlunoField: (index: number, field: keyof Aluno, value: Aluno[keyof Aluno]) => void;
-  /** Substitui a lista inteira de alunos (usado pela importação via Excel). */
-  setAlunos: (alunos: Aluno[]) => void;
 }
 
 export const useSimulationStore = create<SimulationStore>()(
@@ -145,25 +139,6 @@ export const useSimulationStore = create<SimulationStore>()(
           state.data = newState;
           if (!state.data.meta.fontScale) state.data.meta.fontScale = 16;
           if (fileName) state.fileName = fileName;
-        }),
-
-      setAlunoField: (index, field, value) =>
-        set((state) => {
-          const aluno = state.data.alunos[index];
-          if (!aluno) return;
-          // Equivalente ao setByPath(`alunos.${i}.${field}`, value) do
-          // app.js original: apenas grava o valor. Quando o papel não usa
-          // mais empresa/time, o app.js original simplesmente para de
-          // renderizar o <select> correspondente (ver AlunoRow em
-          // AlunosTab.tsx) — os valores antigos ficam no estado, sem uso,
-          // até o papel voltar a precisar deles.
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (aluno as any)[field] = value;
-        }),
-
-      setAlunos: (alunos) =>
-        set((state) => {
-          state.data.alunos = alunos;
         }),
     })),
     {
