@@ -7,6 +7,10 @@ import { EmConstrucao } from "@/components/tabs/EmConstrucao";
 import { AlunosTab } from "@/components/tabs/AlunosTab";
 import { EscalacaoTab } from "@/components/tabs/EscalacaoTab";
 import { SetupTab } from "@/components/tabs/SetupTab";
+import { ScrumMasterTab } from "@/components/tabs/ScrumMasterTab";
+import { OwnerTab } from "@/components/tabs/OwnerTab";
+import { ProductOwnerTab } from "@/components/tabs/ProductOwnerTab";
+import { DevelopersTab } from "@/components/tabs/DevelopersTab";
 import { BuyerProfTab } from "@/components/tabs/BuyerProfTab";
 import { BuyerProductTab } from "@/components/tabs/BuyerProductTab";
 import { CorrupcaoSabotagemTab } from "@/components/tabs/CorrupcaoSabotagemTab";
@@ -17,22 +21,22 @@ import { useSimulationStore } from "@/store/useSimulationStore";
 import type { TabKey } from "@/types";
 
 // =====================================================================
-// Registro de painéis por aba — MERGE das três entregas recebidas.
-//
-// Responsáveis por aba, conforme Divisao_Plano_Migracao_React.md:
-//   setup, alunos, escalacao       -> Pessoa 2 (ENTREGUE)
-//   sm, owner, po, dev             -> Pessoa 3 (NÃO ENTREGUE — EmConstrucao)
+// Registro de painéis por aba — todas as 11 abas do plano de migração
+// já entregues (Pessoa 2, Pessoa 3 e Pessoa 4), conforme
+// Divisao_Plano_Migracao_React.md:
+//   setup, alunos, escalacao       -> Pessoa 2
+//   sm, owner, po, dev             -> Pessoa 3
 //   buyerProf, buyerProduct,
-//   corrupsab, result              -> Pessoa 4 (ENTREGUE)
+//   corrupsab, result              -> Pessoa 4
 // =====================================================================
 const TAB_PANELS: Partial<Record<TabKey, ComponentType>> = {
   setup: SetupTab,
   alunos: AlunosTab,
   escalacao: EscalacaoTab,
-  // sm: ScrumMasterTab,       // pendente — Pessoa 3
-  // owner: OwnerTab,          // pendente — Pessoa 3
-  // po: ProductOwnerTab,      // pendente — Pessoa 3
-  // dev: DevelopersTab,       // pendente — Pessoa 3
+  sm: ScrumMasterTab,
+  owner: OwnerTab,
+  po: ProductOwnerTab,
+  dev: DevelopersTab,
   buyerProf: BuyerProfTab,
   buyerProduct: BuyerProductTab,
   corrupsab: CorrupcaoSabotagemTab,

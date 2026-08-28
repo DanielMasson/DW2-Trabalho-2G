@@ -2,50 +2,61 @@
 
 Migração do painel original (HTML/CSS/JS puro) para **Vite + React + TypeScript**.
 
-## Status pós-merge
+## Status
 
-Este diretório é o resultado do merge das três cópias divergentes do
-repositório recebidas até agora:
+Este diretório é o resultado do merge das quatro entregas do plano de
+migração (`Divisao_Plano_Migracao_React.md`):
 
-1. **Raiz (Pessoa 1 + Pessoa 2)** — fundação do projeto (types, constants,
-   seed, store base, CSS, shell da app) e a entrega completa da Pessoa 2
-   (SetupTab, AlunosTab, EscalacaoTab, persistence.ts, excelImport.ts,
-   scoring.ts + testes, setters `setAlunoField`/`setAlunos`).
-2. **`pessoa2-entrega (1)/`** — idêntica à raiz em todos os arquivos
-   comparados (mesma entrega, cópia duplicada). Nenhum conflito real;
-   tratada como confirmação, não como merge.
-3. **`painel-avaliacao-scrum-pessoa4/`** — entrega da Pessoa 4
-   (BuyerProfTab, BuyerProductTab, CorrupcaoSabotagemTab,
-   ResultadoFinalTab, `lib/sprintLabel.ts`, setters
-   `setBuyerProfField`/`setBuyerProductField`/`setCorrupcaoField`/
-   `setSabotagemField`/`resetAll`).
+1. **Pessoa 1** — fundação do projeto (types, constants, seed, store
+   base, CSS, shell da app).
+2. **Pessoa 2** — `SetupTab`, `AlunosTab`, `EscalacaoTab`,
+   `persistence.ts`, `excelImport.ts`, `scoring.ts` + testes, setters
+   `setAlunoField`/`setAlunos`.
+3. **Pessoa 3** — `ScrumMasterTab`, `OwnerTab`, `ProductOwnerTab`,
+   `DevelopersTab` (abas `sm`/`owner`/`po`/`dev`), setters
+   `setSmField`/`setOwnerField`/`setPoField`/`setDevField` no store
+   (`useSimulationStore.ts`) + testes (`useSimulationStore.test.ts`).
+4. **Pessoa 4** — `BuyerProfTab`, `BuyerProductTab`,
+   `CorrupcaoSabotagemTab`, `ResultadoFinalTab`, `lib/sprintLabel.ts`,
+   setters `setBuyerProfField`/`setBuyerProductField`/
+   `setCorrupcaoField`/`setSabotagemField`/`resetAll`.
 
-### Conflitos resolvidos
+Com isso, **todas as 11 abas** do plano de migração estão implementadas
+e registradas em `App.tsx -> TAB_PANELS`. O placeholder `EmConstrucao`
+continua no projeto apenas como fallback genérico (usado caso alguma
+aba futura ainda não tenha painel registrado), mas não é mais exibido
+para nenhuma das abas atuais.
 
-- **`src/store/useSimulationStore.ts`** — único arquivo com divergência
-  estrutural real entre as cópias. A versão da Pessoa 2 tinha os setters
-  de alunos mas não os de comprador/corrupção/sabotagem; a da Pessoa 4
-  tinha o inverso e também definia `resetAll`. O arquivo mesclado contém
-  **todos os setters das duas frentes** dentro do mesmo `create(...)`.
-- **`src/App.tsx`** — a versão da Pessoa 2 registrava `setup`, `alunos`,
-  `escalacao` e ligava `onSave`/`onLoad`; a da Pessoa 4 registrava
-  `buyerProf`, `buyerProduct`, `corrupsab`, `result` e ligava `onReset`.
-  O `App.tsx` mesclado registra as **7 abas já entregues** em
-  `TAB_PANELS` e liga os três handlers (`onSave`, `onLoad`, `onReset`)
-  na `TopBar` ao mesmo tempo.
-- Todos os demais arquivos (`types/index.ts`, `data/constants.ts`,
-  `data/seed.ts`, `style.css`, componentes de UI, `TopBar.tsx`,
-  `TabsBar.tsx`, `index.html`, configs) eram **byte-a-byte idênticos**
-  nas três cópias — foram apenas conferidos e copiados uma única vez.
+### Entrega da Pessoa 3 — detalhes
 
-### Ainda pendente
-
-- **Pessoa 3** (`sm`, `owner`, `po`, `dev`): nenhuma das três cópias
-  recebidas contém essa entrega. As quatro abas continuam mostrando o
-  placeholder `EmConstrucao`, e o store ainda não tem
-  `setSmField`/`setOwnerField`/`setPoField`/`setDevField` — adicione-os
-  seguindo o mesmo padrão dos setters existentes quando a entrega
-  chegar.
+- `ScrumMasterTab.tsx` — avaliação por Sprint × Empresa (um SM por
+  empresa): checklist Sim/Não (conduziu eventos, removeu impedimentos,
+  ajudou o time) + nota 1–5 + observações. Porta 1:1 o `renderSM()` do
+  `js/app.js` original.
+- `OwnerTab.tsx` — avaliação por Sprint × Empresa: comunicação,
+  negociação e alinhamento (notas 1–5) + nota geral + observações.
+  Porta 1:1 o `renderOwner()` original. Não confundir com os pontos de
+  corrupção, calculados à parte na aba "Corrupção & Sabotagem"
+  (Pessoa 4).
+- `ProductOwnerTab.tsx` — avaliação por Sprint × Empresa × Time (2 times
+  por empresa): checklist Sim/Não (requisitos, testes, reunião de
+  priorização) + nota 1–5 + observações. Porta 1:1 o `renderPO()`
+  original.
+- `DevelopersTab.tsx` — avaliação por Sprint × Empresa × Time: qualidade
+  do produto e colaboração (notas 1–5), checklist "seguiu o processo",
+  nota do time e campo livre de destaque individual. Porta 1:1 o
+  `renderDev()` original.
+- Setters `setSmField`/`setOwnerField`/`setPoField`/`setDevField`
+  adicionados ao `SimulationStore` (`useSimulationStore.ts`), seguindo
+  exatamente o mesmo padrão genérico e tipado (`<K extends keyof Row>`)
+  já usado pelos setters da Pessoa 4 (`setBuyerProfField`/
+  `setBuyerProductField`). Cada um atualiza apenas a linha/campo
+  indicado, via Immer, sem tocar no restante do array.
+- Nenhum arquivo de outra pessoa precisou ser alterado, exceto
+  `App.tsx` (registro das 4 abas em `TAB_PANELS`, trocando o
+  `EmConstrucao` pelo componente real) e `useSimulationStore.ts`
+  (adição dos 4 setters — as demais entradas do store permanecem
+  intactas).
 
 ## Como rodar
 
@@ -56,6 +67,12 @@ npm run dev
 
 Abre em `http://localhost:5173`.
 
+Para rodar os testes (Vitest):
+
+```bash
+npm test
+```
+
 ## Estrutura de pastas
 
 ```
@@ -63,26 +80,32 @@ src/
   types/index.ts
   data/constants.ts
   data/seed.ts
-  store/useSimulationStore.ts   -> MESCLADO (Pessoa 1 + 2 + 4)
+  store/
+    useSimulationStore.ts          -> MESCLADO (Pessoa 1 + 2 + 3 + 4)
+    useSimulationStore.test.ts      (Pessoa 3 — setters sm/owner/po/dev)
   lib/
-    persistence.ts               (Pessoa 2)
-    excelImport.ts                (Pessoa 2)
-    scoring.ts / scoring.test.ts  (Pessoa 2)
-    sprintLabel.ts                (Pessoa 4)
+    persistence.ts                  (Pessoa 2)
+    excelImport.ts                  (Pessoa 2)
+    scoring.ts / scoring.test.ts    (Pessoa 2)
+    sprintLabel.ts                  (Pessoa 4)
   components/
     TopBar.tsx
     TabsBar.tsx
-    ui/                          -> ScoreSelect, SimNaoSelect, DecisaoSelect, ObsInput
+    ui/                            -> ScoreSelect, SimNaoSelect, DecisaoSelect, ObsInput
     tabs/
-      SetupTab.tsx               (Pessoa 2)
-      AlunosTab.tsx              (Pessoa 2)
-      EscalacaoTab.tsx           (Pessoa 2)
-      BuyerProfTab.tsx           (Pessoa 4)
-      BuyerProductTab.tsx        (Pessoa 4)
-      CorrupcaoSabotagemTab.tsx  (Pessoa 4)
-      ResultadoFinalTab.tsx      (Pessoa 4)
-      EmConstrucao.tsx           -> placeholder para sm/owner/po/dev (Pessoa 3, pendente)
+      SetupTab.tsx                  (Pessoa 2)
+      AlunosTab.tsx                 (Pessoa 2)
+      EscalacaoTab.tsx              (Pessoa 2)
+      ScrumMasterTab.tsx            (Pessoa 3)
+      OwnerTab.tsx                  (Pessoa 3)
+      ProductOwnerTab.tsx           (Pessoa 3)
+      DevelopersTab.tsx             (Pessoa 3)
+      BuyerProfTab.tsx              (Pessoa 4)
+      BuyerProductTab.tsx           (Pessoa 4)
+      CorrupcaoSabotagemTab.tsx     (Pessoa 4)
+      ResultadoFinalTab.tsx         (Pessoa 4)
+      EmConstrucao.tsx              -> fallback genérico (sem aba pendente no momento)
   style.css
-  App.tsx                        -> MESCLADO (Pessoa 1 + 2 + 4)
+  App.tsx                          -> MESCLADO (Pessoa 1 + 2 + 3 + 4)
   main.tsx
 ```
