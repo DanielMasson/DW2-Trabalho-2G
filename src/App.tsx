@@ -7,40 +7,36 @@ import { EmConstrucao } from "@/components/tabs/EmConstrucao";
 import { AlunosTab } from "@/components/tabs/AlunosTab";
 import { EscalacaoTab } from "@/components/tabs/EscalacaoTab";
 import { SetupTab } from "@/components/tabs/SetupTab";
+import { BuyerProfTab } from "@/components/tabs/BuyerProfTab";
+import { BuyerProductTab } from "@/components/tabs/BuyerProductTab";
+import { CorrupcaoSabotagemTab } from "@/components/tabs/CorrupcaoSabotagemTab";
+import { ResultadoFinalTab } from "@/components/tabs/ResultadoFinalTab";
 import { TAB_LIST } from "@/data/constants";
 import { loadStateFromFile, saveStateToFile } from "@/lib/persistence";
 import { useSimulationStore } from "@/store/useSimulationStore";
 import type { TabKey } from "@/types";
 
 // =====================================================================
-// Registro de painéis por aba.
-//
-// Cada pessoa liga sua aba aqui, substituindo o placeholder pelo
-// componente real assim que ele existir — não é necessário alterar mais
-// nada em App.tsx. Exemplo (Pessoa 3):
-//
-//   import { ScrumMasterTab } from "@/components/tabs/ScrumMasterTab";
-//   ...
-//   sm: ScrumMasterTab,
+// Registro de painéis por aba — MERGE das três entregas recebidas.
 //
 // Responsáveis por aba, conforme Divisao_Plano_Migracao_React.md:
 //   setup, alunos, escalacao       -> Pessoa 2 (ENTREGUE)
-//   sm, owner, po, dev             -> Pessoa 3
+//   sm, owner, po, dev             -> Pessoa 3 (NÃO ENTREGUE — EmConstrucao)
 //   buyerProf, buyerProduct,
-//   corrupsab, result              -> Pessoa 4
+//   corrupsab, result              -> Pessoa 4 (ENTREGUE)
 // =====================================================================
 const TAB_PANELS: Partial<Record<TabKey, ComponentType>> = {
   setup: SetupTab,
   alunos: AlunosTab,
   escalacao: EscalacaoTab,
-  // sm: ScrumMasterTab,
-  // owner: OwnerTab,
-  // po: ProductOwnerTab,
-  // dev: DevelopersTab,
-  // buyerProf: BuyerProfTab,
-  // buyerProduct: BuyerProductTab,
-  // corrupsab: CorrupcaoSabotagemTab,
-  // result: ResultadoFinalTab,
+  // sm: ScrumMasterTab,       // pendente — Pessoa 3
+  // owner: OwnerTab,          // pendente — Pessoa 3
+  // po: ProductOwnerTab,      // pendente — Pessoa 3
+  // dev: DevelopersTab,       // pendente — Pessoa 3
+  buyerProf: BuyerProfTab,
+  buyerProduct: BuyerProductTab,
+  corrupsab: CorrupcaoSabotagemTab,
+  result: ResultadoFinalTab,
 };
 
 function PanelWrap() {
@@ -59,6 +55,7 @@ export default function App() {
   const fontScale = useSimulationStore((s) => s.data.meta.fontScale);
   const data = useSimulationStore((s) => s.data);
   const replaceState = useSimulationStore((s) => s.replaceState);
+  const resetAll = useSimulationStore((s) => s.resetAll);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Equivalente ao applyFontScale() do app.js original.
@@ -87,13 +84,20 @@ export default function App() {
     }
   }
 
+  // ---- Limpar tudo (Pessoa 4 — resetAll() no store) --------------------
+  function handleReset() {
+    if (
+      window.confirm(
+        "Isso apaga todos os dados lançados nesta sessão (não afeta arquivos já salvos). Continuar?"
+      )
+    ) {
+      resetAll();
+    }
+  }
+
   return (
     <>
-      <TopBar
-        onSave={handleSave}
-        onLoad={handleLoadClick}
-        // TODO(Pessoa 4): onReset={() => { if (confirm("...")) resetAll(); }}
-      />
+      <TopBar onSave={handleSave} onLoad={handleLoadClick} onReset={handleReset} />
       <input
         type="file"
         accept=".json"
