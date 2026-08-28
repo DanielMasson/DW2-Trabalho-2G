@@ -7,7 +7,6 @@ import {
   computeEmpresaScore,
   computeSabotagemPontos,
 } from "@/lib/scoring";
-import type { Corrupcao, Sabotagem } from "@/types";
 
 describe("avg", () => {
   it("retorna null para array vazio", () => {
@@ -32,7 +31,7 @@ describe("avg", () => {
 });
 
 describe("computeCorrupcaoPontos", () => {
-  const base: Corrupcao = {
+  const base = {
     empresaCorruptora: "Empresa A",
     primeiraDescoberta: false,
     primeiroComprador: "",
@@ -45,19 +44,19 @@ describe("computeCorrupcaoPontos", () => {
   });
 
   it("primeira descoberta tira 1 ponto do corruptor", () => {
-    const c: Corrupcao = { ...base, primeiraDescoberta: true };
+    const c = { ...base, primeiraDescoberta: true };
     expect(computeCorrupcaoPontos(c).corruptor).toBe(-1);
   });
 
   it("primeira descoberta com comprador identificado também penaliza o comprador", () => {
-    const c: Corrupcao = { ...base, primeiraDescoberta: true, primeiroComprador: "Governo" };
+    const c = { ...base, primeiraDescoberta: true, primeiroComprador: "Governo" };
     const pts = computeCorrupcaoPontos(c);
     expect(pts.corruptor).toBe(-1);
     expect(pts.compradores).toEqual({ Governo: -1 });
   });
 
   it("duas descobertas com o mesmo comprador acumulam -2 para ele", () => {
-    const c: Corrupcao = {
+    const c = {
       ...base,
       primeiraDescoberta: true,
       primeiroComprador: "Governo",
@@ -70,7 +69,7 @@ describe("computeCorrupcaoPontos", () => {
   });
 
   it("duas descobertas com compradores diferentes penalizam cada um", () => {
-    const c: Corrupcao = {
+    const c = {
       ...base,
       primeiraDescoberta: true,
       primeiroComprador: "Governo",
@@ -84,7 +83,7 @@ describe("computeCorrupcaoPontos", () => {
 });
 
 describe("computeSabotagemPontos", () => {
-  const base: Sabotagem = {
+  const base = {
     empresaSabotador: "Empresa A",
     timeSabotador: "Caça",
     tipoAcao: "atrapalhar",
@@ -98,27 +97,27 @@ describe("computeSabotagemPontos", () => {
   });
 
   it("descoberto e área não sabia: sabotador -1, área +1", () => {
-    const s: Sabotagem = { ...base, descoberto: true };
+    const s = { ...base, descoberto: true };
     expect(computeSabotagemPontos(s)).toEqual({ sabotador: -1, area: 1, demitido: false });
   });
 
   it("descoberto e área sabia e calou: sabotador -1, área -1", () => {
-    const s: Sabotagem = { ...base, descoberto: true, areaSoubeECalou: true };
+    const s = { ...base, descoberto: true, areaSoubeECalou: true };
     expect(computeSabotagemPontos(s)).toEqual({ sabotador: -1, area: -1, demitido: false });
   });
 
   it("'vazar' com 1 denúncia consecutiva já resulta em demissão", () => {
-    const s: Sabotagem = { ...base, tipoAcao: "vazar", descoberto: true, denunciasConsecutivas: 1 };
+    const s = { ...base, tipoAcao: "vazar", descoberto: true, denunciasConsecutivas: 1 };
     expect(computeSabotagemPontos(s).demitido).toBe(true);
   });
 
   it("'atrapalhar' com 1 denúncia consecutiva NÃO demite ainda", () => {
-    const s: Sabotagem = { ...base, tipoAcao: "atrapalhar", descoberto: true, denunciasConsecutivas: 1 };
+    const s = { ...base, tipoAcao: "atrapalhar", descoberto: true, denunciasConsecutivas: 1 };
     expect(computeSabotagemPontos(s).demitido).toBe(false);
   });
 
   it("'atrapalhar' com 2 denúncias consecutivas resulta em demissão", () => {
-    const s: Sabotagem = { ...base, tipoAcao: "atrapalhar", descoberto: true, denunciasConsecutivas: 2 };
+    const s = { ...base, tipoAcao: "atrapalhar", descoberto: true, denunciasConsecutivas: 2 };
     expect(computeSabotagemPontos(s).demitido).toBe(true);
   });
 });
@@ -135,14 +134,12 @@ describe("computeEmpresaScore", () => {
 
   it("calcula a média ponderada apenas com os papéis que têm nota lançada", () => {
     const data = buildInitialData("Empresa A", "Empresa B");
-    // pesos: sm=1, owner=1, po=1, dev=2, buyer=2 (ver seed.ts)
     data.sm[0].empresa = "Empresa A";
     data.sm[0].nota = 4;
     data.owner[0].empresa = "Empresa A";
     data.owner[0].notaGeral = 2;
 
     const score = computeEmpresaScore(data, "Empresa A");
-    // (4*1 + 2*1) / (1+1) = 3
     expect(score.base).toBe(3);
     expect(score.ajuste).toBe(0);
     expect(score.final).toBe(3);
@@ -167,7 +164,7 @@ describe("computeEmpresaScore", () => {
     data.sm[0].nota = 3;
     data.sabotagem.empresaSabotador = "Empresa A";
     data.sabotagem.descoberto = true;
-    data.sabotagem.areaSoubeECalou = true; // sabotador -1, área -1 => ajuste -2
+    data.sabotagem.areaSoubeECalou = true;
 
     const score = computeEmpresaScore(data, "Empresa A");
     expect(score.base).toBe(3);

@@ -2,11 +2,6 @@ import { ObsInput, ScoreSelect, SimNaoSelect } from "@/components/ui";
 import { sprintCellLabel } from "@/lib/sprintLabel";
 import { useSimulationStore } from "@/store/useSimulationStore";
 
-/**
- * Avaliação do professor sobre como cada comprador (Governo, Militar,
- * Setor Privado) exerceu seu papel a cada Sprint. Equivalente ao
- * renderBuyerProf() do app.js original.
- */
 export function BuyerProfTab() {
   const rows = useSimulationStore((s) => s.data.buyerProf);
   const setBuyerProfField = useSimulationStore((s) => s.setBuyerProfField);

@@ -2,10 +2,6 @@ import { ObsInput, ScoreSelect, SimNaoSelect } from "@/components/ui";
 import { sprintCellLabel } from "@/lib/sprintLabel";
 import { useSimulationStore } from "@/store/useSimulationStore";
 
-/**
- * Aba "Product Owner" — um PO por time (2 times por empresa).
- * Equivalente ao renderPO() do app.js original (Pessoa 3).
- */
 export function ProductOwnerTab() {
   const rows = useSimulationStore((s) => s.data.po);
   const setPoField = useSimulationStore((s) => s.setPoField);

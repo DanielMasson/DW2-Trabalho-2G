@@ -2,11 +2,6 @@ import { DecisaoSelect, ScoreSelect, SimNaoSelect } from "@/components/ui";
 import { sprintCellLabel } from "@/lib/sprintLabel";
 import { useSimulationStore } from "@/store/useSimulationStore";
 
-/**
- * Transcrição da ficha em papel preenchida por cada comprador ao final
- * de cada Sprint, avaliando o produto (Caça/Transporte) de cada
- * empresa. Equivalente ao renderBuyerProduct() do app.js original.
- */
 export function BuyerProductTab() {
   const rows = useSimulationStore((s) => s.data.buyerProduct);
   const setBuyerProductField = useSimulationStore((s) => s.setBuyerProductField);

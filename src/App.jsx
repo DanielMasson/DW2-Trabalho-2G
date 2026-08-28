@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import type { ChangeEvent, ComponentType } from "react";
 
 import { TopBar } from "@/components/TopBar";
 import { TabsBar } from "@/components/TabsBar";
@@ -18,18 +17,8 @@ import { ResultadoFinalTab } from "@/components/tabs/ResultadoFinalTab";
 import { TAB_LIST } from "@/data/constants";
 import { loadStateFromFile, saveStateToFile } from "@/lib/persistence";
 import { useSimulationStore } from "@/store/useSimulationStore";
-import type { TabKey } from "@/types";
 
-// =====================================================================
-// Registro de painéis por aba — todas as 11 abas do plano de migração
-// já entregues (Pessoa 2, Pessoa 3 e Pessoa 4), conforme
-// Divisao_Plano_Migracao_React.md:
-//   setup, alunos, escalacao       -> Pessoa 2
-//   sm, owner, po, dev             -> Pessoa 3
-//   buyerProf, buyerProduct,
-//   corrupsab, result              -> Pessoa 4
-// =====================================================================
-const TAB_PANELS: Partial<Record<TabKey, ComponentType>> = {
+const TAB_PANELS = {
   setup: SetupTab,
   alunos: AlunosTab,
   escalacao: EscalacaoTab,
@@ -60,14 +49,12 @@ export default function App() {
   const data = useSimulationStore((s) => s.data);
   const replaceState = useSimulationStore((s) => s.replaceState);
   const resetAll = useSimulationStore((s) => s.resetAll);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef(null);
 
-  // Equivalente ao applyFontScale() do app.js original.
   useEffect(() => {
     document.documentElement.style.fontSize = `${fontScale}px`;
   }, [fontScale]);
 
-  // ---- Salvar/Carregar .json (Pessoa 2 — lib/persistence.ts) ----------
   function handleSave() {
     saveStateToFile(data);
   }
@@ -76,7 +63,7 @@ export default function App() {
     fileInputRef.current?.click();
   }
 
-  async function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
+  async function handleFileChange(e) {
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file) return;
@@ -88,7 +75,6 @@ export default function App() {
     }
   }
 
-  // ---- Limpar tudo (Pessoa 4 — resetAll() no store) --------------------
   function handleReset() {
     if (
       window.confirm(

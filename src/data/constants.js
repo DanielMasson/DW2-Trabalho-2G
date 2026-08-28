@@ -1,17 +1,14 @@
-import type { Buyer, Papel, TabKey, TimeNome } from "@/types";
-
 // =====================================================================
-// CONSTANTES DE DOMÍNIO
-// Portadas 1:1 do js/app.js original.
+// CONSTANTES E TIPOS DE DOMÍNIO — exportados como valores/strings
 // =====================================================================
 
-export const SPRINTS = [1, 2, 3] as const;
+export const SPRINTS = [1, 2, 3];
 
-export const TIMES: TimeNome[] = ["Caça", "Transporte"];
+export const TIMES = ["Caça", "Transporte"];
 
-export const BUYERS: Buyer[] = ["Governo", "Militar", "Setor Privado"];
+export const BUYERS = ["Governo", "Militar", "Setor Privado"];
 
-export const PAPEIS: Papel[] = [
+export const PAPEIS = [
   "",
   "Scrum Master",
   "Product Owner",
@@ -22,11 +19,7 @@ export const PAPEIS: Papel[] = [
   "Comprador - Setor Privado",
 ];
 
-/**
- * Imagens por empresa/time. Os arquivos vivem em /public/images, então o
- * caminho é resolvido a partir da raiz do site (sem precisar de import).
- */
-export const TEAM_IMAGES: Record<string, { logo: string; Caça: string; Transporte: string }> = {
+export const TEAM_IMAGES = {
   "Maverick Aviation": {
     logo: "/images/maverick_caca.jpg",
     Caça: "/images/maverick_caca.jpg",
@@ -39,13 +32,13 @@ export const TEAM_IMAGES: Record<string, { logo: string; Caça: string; Transpor
   },
 };
 
-export const BUYER_IMAGES: Record<Buyer, string> = {
+export const BUYER_IMAGES = {
   Governo: "/images/governo_caca.jpg",
   Militar: "/images/militar.jpg",
   "Setor Privado": "/images/empresa_privada.jpg",
 };
 
-export const ROLE_COLORS: Partial<Record<Papel, string>> = {
+export const ROLE_COLORS = {
   "Scrum Master": "#455F51",
   "Product Owner": "#029676",
   "Owner/Stakeholder": "#0989B1",
@@ -55,13 +48,7 @@ export const ROLE_COLORS: Partial<Record<Papel, string>> = {
   "Comprador - Setor Privado": "#E8871E",
 };
 
-/**
- * Lista de abas na ordem de navegação (TabsBar) e título exibido.
- * O componente correspondente a cada aba é registrado em App.tsx,
- * em `TAB_PANELS` — cada pessoa liga sua própria aba lá, sem precisar
- * tocar neste arquivo.
- */
-export const TAB_LIST: { key: TabKey; label: string }[] = [
+export const TAB_LIST = [
   { key: "setup", label: "Configuração" },
   { key: "alunos", label: "Alunos" },
   { key: "escalacao", label: "Escalação" },

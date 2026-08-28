@@ -1,13 +1,5 @@
-import type { Corrupcao, EmpresaScore, Sabotagem, SimulationState } from "@/types";
-
 // =====================================================================
 // SCORING — funções puras, portadas 1:1 do js/app.js original.
-//
-// Sem dependência de DOM/React: recebem dados e devolvem números, o que
-// facilita testar com Vitest (ver scoring.test.ts) e reutilizar tanto na
-// aba "Resultado Final" (Pessoa 4) quanto em qualquer outro lugar que
-// precise do cálculo (ex.: persistence.ts, se algum dia precisar validar
-// um arquivo carregado).
 // =====================================================================
 
 /**
@@ -15,24 +7,19 @@ import type { Corrupcao, EmpresaScore, Sabotagem, SimulationState } from "@/type
  * Ignora entradas que não são número válido. Retorna null se não houver
  * nenhum valor numérico (equivalente ao avg() do app.js original).
  */
-export function avg(arr: Array<number | string>): number | null {
+export function avg(arr) {
   const nums = arr.map((v) => parseFloat(String(v))).filter((v) => !isNaN(v));
   if (!nums.length) return null;
   return nums.reduce((a, b) => a + b, 0) / nums.length;
-}
-
-export interface CorrupcaoPontos {
-  corruptor: number;
-  compradores: Record<string, number>;
 }
 
 /**
  * Pontos fixos do mecanismo de corrupção: -1 para o corruptor a cada
  * descoberta, e -1 para o comprador que aceitou (se identificado).
  */
-export function computeCorrupcaoPontos(c: Corrupcao): CorrupcaoPontos {
+export function computeCorrupcaoPontos(c) {
   let corruptor = 0;
-  const compradores: Record<string, number> = {};
+  const compradores = {};
 
   if (c.primeiraDescoberta) {
     corruptor -= 1;
@@ -49,21 +36,10 @@ export function computeCorrupcaoPontos(c: Corrupcao): CorrupcaoPontos {
   return { corruptor, compradores };
 }
 
-export interface SabotagemPontos {
-  sabotador: number;
-  area: number;
-  demitido: boolean;
-}
-
 /**
- * Pontos fixos do mecanismo de sabotagem. Regras (idênticas ao original):
- * - Se descoberto: sabotador perde 1 ponto.
- * - A área/time ganha 1 ponto se denunciou (não sabia/calou), ou perde 1
- *   se sabia e ficou calada.
- * - "vazar" com >=1 denúncia consecutiva, ou "atrapalhar" com >=2,
- *   resulta em demissão (o aluno vai para o time rival).
+ * Pontos fixos do mecanismo de sabotagem.
  */
-export function computeSabotagemPontos(s: Sabotagem): SabotagemPontos {
+export function computeSabotagemPontos(s) {
   let sabotador = 0;
   let area = 0;
   let demitido = false;
@@ -82,7 +58,7 @@ export function computeSabotagemPontos(s: Sabotagem): SabotagemPontos {
  * (pesos configuráveis em "Configuração"), somada aos pontos fixos de
  * corrupção/sabotagem quando a empresa é a corruptora/sabotadora.
  */
-export function computeEmpresaScore(data: SimulationState, empresa: string): EmpresaScore {
+export function computeEmpresaScore(data, empresa) {
   const w = data.weights;
 
   const smAvg = avg(data.sm.filter((r) => r.empresa === empresa).map((r) => r.nota));

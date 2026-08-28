@@ -2,11 +2,6 @@ import { ObsInput, ScoreSelect } from "@/components/ui";
 import { sprintCellLabel } from "@/lib/sprintLabel";
 import { useSimulationStore } from "@/store/useSimulationStore";
 
-/**
- * Aba "Owner" — avaliação de comunicação e negociação do Owner/Stakeholder,
- * independente dos pontos de corrupção (registrados na aba "Corrupção &
- * Sabotagem"). Equivalente ao renderOwner() do app.js original (Pessoa 3).
- */
 export function OwnerTab() {
   const rows = useSimulationStore((s) => s.data.owner);
   const setOwnerField = useSimulationStore((s) => s.setOwnerField);

@@ -1,14 +1,8 @@
 import { computeEmpresaScore } from "@/lib/scoring";
 import { useSimulationStore } from "@/store/useSimulationStore";
 
-/** Gradientes de fundo por empresa (A / B), na mesma ordem de sempre. */
 const CORES = ["linear-gradient(135deg, #455F51, #324339)", "linear-gradient(135deg, #0989B1, #065E77)"];
 
-/**
- * Dashboard com a nota final calculada de cada empresa, a partir das
- * médias lançadas nas demais abas mais o ajuste de corrupção/sabotagem.
- * Equivalente ao renderResult() do app.js original.
- */
 export function ResultadoFinalTab() {
   const data = useSimulationStore((s) => s.data);
   const empresas = [data.meta.empresaA, data.meta.empresaB];

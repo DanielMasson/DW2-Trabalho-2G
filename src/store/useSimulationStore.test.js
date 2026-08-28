@@ -3,12 +3,6 @@ import { describe, expect, it, beforeEach } from "vitest";
 import { useSimulationStore, FILE_NAME_PADRAO } from "@/store/useSimulationStore";
 import { buildInitialData, EMPRESA_A_PADRAO, EMPRESA_B_PADRAO } from "@/data/seed";
 
-// =====================================================================
-// Testes dos setters da Pessoa 3 (papéis internos: sm/owner/po/dev).
-// Cobre apenas os setters adicionados por esta entrega — os demais
-// setters (Pessoa 2/Pessoa 4) já existiam e não são reescritos aqui.
-// =====================================================================
-
 beforeEach(() => {
   useSimulationStore.setState({
     data: buildInitialData(EMPRESA_A_PADRAO, EMPRESA_B_PADRAO),

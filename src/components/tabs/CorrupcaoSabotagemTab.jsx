@@ -1,14 +1,7 @@
 import { BUYERS, TIMES } from "@/data/constants";
 import { computeCorrupcaoPontos, computeSabotagemPontos } from "@/lib/scoring";
 import { useSimulationStore } from "@/store/useSimulationStore";
-import type { TimeNome, TipoAcaoSabotagem } from "@/types";
 
-/**
- * Mecânicas especiais de Corrupção (Owner) e Sabotagem (Developer),
- * baseadas em regras fixas — os pontos são calculados automaticamente
- * a partir do estado. Equivalente ao renderCorrupSab() do app.js
- * original.
- */
 export function CorrupcaoSabotagemTab() {
   const meta = useSimulationStore((s) => s.data.meta);
   const corrupcao = useSimulationStore((s) => s.data.corrupcao);
@@ -17,7 +10,6 @@ export function CorrupcaoSabotagemTab() {
   const setSabotagemField = useSimulationStore((s) => s.setSabotagemField);
 
   const empresas = [meta.empresaA, meta.empresaB];
-  // O Militar nunca negocia com o corruptor (só compra Caça diretamente do Governo/regras do jogo).
   const compradoresElegiveis = BUYERS.filter((b) => b !== "Militar");
 
   const cPts = computeCorrupcaoPontos(corrupcao);
@@ -149,7 +141,7 @@ export function CorrupcaoSabotagemTab() {
             <label>Time do sabotador</label>
             <select
               value={sabotagem.timeSabotador}
-              onChange={(e) => setSabotagemField("timeSabotador", e.target.value as TimeNome)}
+              onChange={(e) => setSabotagemField("timeSabotador", e.target.value)}
             >
               {TIMES.map((t) => (
                 <option key={t} value={t}>
@@ -163,7 +155,7 @@ export function CorrupcaoSabotagemTab() {
             <label>Tipo de ação</label>
             <select
               value={sabotagem.tipoAcao}
-              onChange={(e) => setSabotagemField("tipoAcao", e.target.value as TipoAcaoSabotagem)}
+              onChange={(e) => setSabotagemField("tipoAcao", e.target.value)}
             >
               <option value="vazar">Vazar informação</option>
               <option value="atrapalhar">Atrapalhar decisões/produção</option>
@@ -187,7 +179,7 @@ export function CorrupcaoSabotagemTab() {
                 <select
                   value={sabotagem.denunciasConsecutivas}
                   onChange={(e) =>
-                    setSabotagemField("denunciasConsecutivas", Number(e.target.value) as 0 | 1 | 2)
+                    setSabotagemField("denunciasConsecutivas", Number(e.target.value))
                   }
                 >
                   <option value={0}>0</option>

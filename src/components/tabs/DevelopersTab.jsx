@@ -2,12 +2,6 @@ import { ObsInput, ScoreSelect, SimNaoSelect } from "@/components/ui";
 import { sprintCellLabel } from "@/lib/sprintLabel";
 import { useSimulationStore } from "@/store/useSimulationStore";
 
-/**
- * Aba "Developers" — avaliação por time. Com muitos alunos em produção,
- * a qualidade do produto é o principal indicador de entendimento do
- * processo pelo grupo. Equivalente ao renderDev() do app.js original
- * (Pessoa 3).
- */
 export function DevelopersTab() {
   const rows = useSimulationStore((s) => s.data.dev);
   const setDevField = useSimulationStore((s) => s.setDevField);

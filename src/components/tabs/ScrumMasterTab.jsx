@@ -2,10 +2,6 @@ import { ObsInput, ScoreSelect, SimNaoSelect } from "@/components/ui";
 import { sprintCellLabel } from "@/lib/sprintLabel";
 import { useSimulationStore } from "@/store/useSimulationStore";
 
-/**
- * Aba "Scrum Master" — um SM por empresa, atendendo os dois times.
- * Equivalente ao renderSM() do app.js original (Pessoa 3).
- */
 export function ScrumMasterTab() {
   const rows = useSimulationStore((s) => s.data.sm);
   const setSmField = useSimulationStore((s) => s.setSmField);

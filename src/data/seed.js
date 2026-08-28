@@ -1,21 +1,11 @@
 import { BUYERS, SPRINTS, TIMES } from "@/data/constants";
-import type {
-  Aluno,
-  BuyerProductRow,
-  BuyerProfRow,
-  DevRow,
-  OwnerRow,
-  PoRow,
-  SimulationState,
-  SmRow,
-} from "@/types";
 
 // =====================================================================
 // SEED — lista de alunos e fábrica do estado inicial.
 // Portado 1:1 do js/app.js original (SEED_NAMES + buildInitialData).
 // =====================================================================
 
-export const SEED_NAMES: string[] = [
+export const SEED_NAMES = [
   "ALAN FERREIRA DE OLIVEIRA",
   "ANDRÉ LUIZ VICENZI RIGO",
   "ARTHUR HENRIQUE LORENZETT",
@@ -54,11 +44,11 @@ export const SEED_NAMES: string[] = [
  * empresas. Usada tanto no bootstrap do store quanto em "Limpar tudo"
  * (resetAll, ligado pela Pessoa 4 na aba Corrupção & Sabotagem / TopBar).
  */
-export function buildInitialData(empresaA: string, empresaB: string): SimulationState {
+export function buildInitialData(empresaA, empresaB) {
   const empresas = [empresaA, empresaB];
 
-  const sm: SmRow[] = [];
-  const owner: OwnerRow[] = [];
+  const sm = [];
+  const owner = [];
   SPRINTS.forEach((sp) =>
     empresas.forEach((emp) => {
       sm.push({ sprint: sp, empresa: emp, conduziu: "", removeu: "", ajudou: "", nota: "", obs: "" });
@@ -66,8 +56,8 @@ export function buildInitialData(empresaA: string, empresaB: string): Simulation
     })
   );
 
-  const po: PoRow[] = [];
-  const dev: DevRow[] = [];
+  const po = [];
+  const dev = [];
   SPRINTS.forEach((sp) =>
     empresas.forEach((emp) =>
       TIMES.forEach((t) => {
@@ -77,14 +67,14 @@ export function buildInitialData(empresaA: string, empresaB: string): Simulation
     )
   );
 
-  const buyerProf: BuyerProfRow[] = [];
+  const buyerProf = [];
   SPRINTS.forEach((sp) =>
     BUYERS.forEach((b) => {
       buyerProf.push({ sprint: sp, comprador: b, checklist: "", decisoes: "", feedback: "", nota: "", obs: "" });
     })
   );
 
-  const buyerProduct: BuyerProductRow[] = [];
+  const buyerProduct = [];
   SPRINTS.forEach((sp) => {
     empresas.forEach((emp) => {
       buyerProduct.push({ sprint: sp, comprador: "Governo", empresa: emp, produto: "Caça", pt: "", pv: "", prazo: "", comOwner: "", sinal: "", decisao: "", nota: "" });
@@ -104,9 +94,9 @@ export function buildInitialData(empresaA: string, empresaB: string): Simulation
 
   const sabotagem = {
     empresaSabotador: empresaA,
-    timeSabotador: "Caça" as const,
-    tipoAcao: "atrapalhar" as const,
-    denunciasConsecutivas: 0 as const,
+    timeSabotador: "Caça",
+    tipoAcao: "atrapalhar",
+    denunciasConsecutivas: 0,
     descoberto: false,
     areaSoubeECalou: false,
   };
@@ -118,7 +108,7 @@ export function buildInitialData(empresaA: string, empresaB: string): Simulation
     [empresaB]: { Caça: "SkyForge Combat", Transporte: "SkyForge Transport" },
   };
 
-  const alunos: Aluno[] = SEED_NAMES.map((nome, i) => ({
+  const alunos = SEED_NAMES.map((nome, i) => ({
     id: i + 1,
     nome,
     empresa: "",

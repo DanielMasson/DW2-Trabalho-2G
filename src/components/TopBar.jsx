@@ -1,18 +1,6 @@
 import { useSimulationStore } from "@/store/useSimulationStore";
 
-interface TopBarProps {
-  /**
-   * Handlers injetados pela App.
-   *   - onSave / onLoad -> Pessoa 2 (lib/persistence.ts)
-   *   - onReset         -> Pessoa 4 (resetAll() no store + confirm())
-   * Enquanto não estiverem prontos, os botões ficam desabilitados.
-   */
-  onSave?: () => void;
-  onLoad?: () => void;
-  onReset?: () => void;
-}
-
-export function TopBar({ onSave, onLoad, onReset }: TopBarProps) {
+export function TopBar({ onSave, onLoad, onReset }) {
   const fileName = useSimulationStore((s) => s.fileName);
   const fontScale = useSimulationStore((s) => s.data.meta.fontScale);
   const changeFontScale = useSimulationStore((s) => s.changeFontScale);

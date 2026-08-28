@@ -1,13 +1,10 @@
 import { useMemo, useRef, useState } from "react";
-import type { ChangeEvent } from "react";
 
 import { PAPEIS, TIMES } from "@/data/constants";
 import { buildAlunosFromNames, readNamesFromExcelFile } from "@/lib/excelImport";
 import { useSimulationStore } from "@/store/useSimulationStore";
-import type { Aluno, Papel } from "@/types";
 
-/** Papéis que exigem escolha de empresa (equivalente ao `needsEmpresa` do app.js original). */
-function precisaEmpresa(papel: Papel): boolean {
+function precisaEmpresa(papel) {
   return (
     papel === "Scrum Master" ||
     papel === "Owner/Stakeholder" ||
@@ -16,18 +13,11 @@ function precisaEmpresa(papel: Papel): boolean {
   );
 }
 
-/** Papéis que exigem escolha de time (equivalente ao `needsTime` do app.js original). */
-function precisaTime(papel: Papel): boolean {
+function precisaTime(papel) {
   return papel === "Product Owner" || papel === "Developer";
 }
 
-interface AlunoRowProps {
-  aluno: Aluno;
-  index: number;
-  empresas: string[];
-}
-
-function AlunoRow({ aluno, index, empresas }: AlunoRowProps) {
+function AlunoRow({ aluno, index, empresas }) {
   const setAlunoField = useSimulationStore((s) => s.setAlunoField);
 
   return (
@@ -37,7 +27,7 @@ function AlunoRow({ aluno, index, empresas }: AlunoRowProps) {
       <td>
         <select
           value={aluno.papel}
-          onChange={(e) => setAlunoField(index, "papel", e.target.value as Papel)}
+          onChange={(e) => setAlunoField(index, "papel", e.target.value)}
         >
           {PAPEIS.map((p) => (
             <option key={p} value={p}>
@@ -77,11 +67,6 @@ function AlunoRow({ aluno, index, empresas }: AlunoRowProps) {
   );
 }
 
-/**
- * Aba "Alunos" — equivalente a renderAlunos()/renderAlunoRow() do app.js
- * original. Atribuição de papel/empresa/time por aluno, busca local
- * (useState, sem tocar o store) e importação de lista via Excel.
- */
 export function AlunosTab() {
   const alunos = useSimulationStore((s) => s.data.alunos);
   const meta = useSimulationStore((s) => s.data.meta);
@@ -90,7 +75,7 @@ export function AlunosTab() {
 
   const [busca, setBusca] = useState("");
   const [importando, setImportando] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef(null);
 
   const empresas = useMemo(() => [meta.empresaA, meta.empresaB], [meta.empresaA, meta.empresaB]);
 
@@ -104,7 +89,7 @@ export function AlunosTab() {
   const naoAtribuidos = useMemo(() => alunos.filter((a) => !a.papel).length, [alunos]);
 
   const counts = useMemo(() => {
-    const base: Record<string, Record<string, number>> = {};
+    const base = {};
     empresas.forEach((e) => {
       base[e] = {
         "Scrum Master": 0,
@@ -115,7 +100,7 @@ export function AlunosTab() {
         "Developer-Transporte": 0,
       };
     });
-    const buyerCounts: Record<string, number> = {
+    const buyerCounts = {
       "Comprador - Governo": 0,
       "Comprador - Militar": 0,
       "Comprador - Setor Privado": 0,
@@ -138,7 +123,7 @@ export function AlunosTab() {
     return { porEmpresa: base, compradores: buyerCounts };
   }, [alunos, empresas]);
 
-  async function handleImportFile(e: ChangeEvent<HTMLInputElement>) {
+  async function handleImportFile(e) {
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file) return;
@@ -150,7 +135,7 @@ export function AlunosTab() {
         alert("Não encontrei nomes reconhecíveis nesse arquivo.");
         return;
       }
-      const confirmado = confirm(
+      const confirmado = window.confirm(
         `Encontrei ${nomes.length} nomes. Isso substitui a lista atual de alunos (as atribuições feitas serão perdidas). Continuar?`
       );
       if (!confirmado) return;

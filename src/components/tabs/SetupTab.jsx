@@ -1,9 +1,6 @@
-import type { ChangeEvent } from "react";
-
 import { useSimulationStore } from "@/store/useSimulationStore";
-import type { Weights } from "@/types";
 
-const WEIGHT_LABELS: Record<keyof Weights, string> = {
+const WEIGHT_LABELS = {
   sm: "Scrum Master",
   owner: "Owner",
   po: "Product Owner",
@@ -11,13 +8,8 @@ const WEIGHT_LABELS: Record<keyof Weights, string> = {
   buyer: "Avaliação dos Compradores",
 };
 
-const WEIGHT_KEYS = Object.keys(WEIGHT_LABELS) as (keyof Weights)[];
+const WEIGHT_KEYS = Object.keys(WEIGHT_LABELS);
 
-/**
- * Aba "Configuração" — equivalente ao renderSetup() do app.js original.
- * Identificação da turma/data, nomes de empresas e times, e pesos usados
- * no cálculo da nota final (consumidos por lib/scoring.ts).
- */
 export function SetupTab() {
   const meta = useSimulationStore((s) => s.data.meta);
   const teamNames = useSimulationStore((s) => s.data.teamNames);
@@ -27,8 +19,8 @@ export function SetupTab() {
   const setWeights = useSimulationStore((s) => s.setWeights);
   const renameEmpresa = useSimulationStore((s) => s.renameEmpresa);
 
-  const handleWeightChange = (key: keyof Weights) => (e: ChangeEvent<HTMLInputElement>) => {
-    setWeights({ [key]: parseFloat(e.target.value) || 0 } as Partial<Weights>);
+  const handleWeightChange = (key) => (e) => {
+    setWeights({ [key]: parseFloat(e.target.value) || 0 });
   };
 
   return (

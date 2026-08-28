@@ -1,21 +1,11 @@
 import { BUYERS, BUYER_IMAGES, ROLE_COLORS, TEAM_IMAGES, TIMES } from "@/data/constants";
 import { useSimulationStore } from "@/store/useSimulationStore";
-import type { Aluno, TimeNome } from "@/types";
 
-function papelBadgeColor(papel: Aluno["papel"]): string {
+function papelBadgeColor(papel) {
   return ROLE_COLORS[papel] || "#6E6E6E";
 }
 
-interface CompanyBlockProps {
-  empresa: string;
-}
-
-/**
- * Bloco de uma empresa: logo, SM/Owner, e os dois times (Caça/Transporte)
- * com seus PO e Developers. Equivalente ao renderCompanyBlock() do
- * app.js original.
- */
-function CompanyBlock({ empresa }: CompanyBlockProps) {
+function CompanyBlock({ empresa }) {
   const alunos = useSimulationStore((s) => s.data.alunos);
   const teamNames = useSimulationStore((s) => s.data.teamNames);
   const imgs = TEAM_IMAGES[empresa] ?? { logo: "", Caça: "", Transporte: "" };
@@ -23,7 +13,7 @@ function CompanyBlock({ empresa }: CompanyBlockProps) {
   const sm = alunos.find((a) => a.papel === "Scrum Master" && a.empresa === empresa);
   const owner = alunos.find((a) => a.papel === "Owner/Stakeholder" && a.empresa === empresa);
 
-  const teamRoster = (time: TimeNome) =>
+  const teamRoster = (time) =>
     alunos
       .filter(
         (a) =>
@@ -82,11 +72,6 @@ function CompanyBlock({ empresa }: CompanyBlockProps) {
   );
 }
 
-/**
- * Aba "Escalação" — visão de equipe somente leitura, com a identidade
- * visual de cada empresa. Equivalente ao renderEscalacao() do app.js
- * original.
- */
 export function EscalacaoTab() {
   const meta = useSimulationStore((s) => s.data.meta);
   const alunos = useSimulationStore((s) => s.data.alunos);
