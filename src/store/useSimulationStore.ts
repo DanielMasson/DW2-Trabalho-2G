@@ -3,25 +3,34 @@ import { immer } from "zustand/middleware/immer";
 import { persist } from "zustand/middleware";
 
 import { buildInitialData, EMPRESA_A_PADRAO, EMPRESA_B_PADRAO } from "@/data/seed";
-import type { Aluno, Meta, SimulationState, TabKey, Weights } from "@/types";
+import type {
+  Aluno,
+  BuyerProductRow,
+  BuyerProfRow,
+  Corrupcao,
+  Meta,
+  Sabotagem,
+  SimulationState,
+  TabKey,
+  Weights,
+} from "@/types";
 
 // =====================================================================
 // STORE GLOBAL DA SIMULAÇÃO
 //
-// Base + setters genéricos (Pessoa 1). Cada pessoa deve acrescentar aqui
-// os setters específicos da sua aba, seguindo o mesmo padrão dos
-// existentes (mutação direta do draft via immer):
+// MERGE: este arquivo consolida os setters genéricos (Pessoa 1) com os
+// específicos entregues por:
+//   - Pessoa 2: setAlunoField / setAlunos (setup/alunos/escalação).
+//   - Pessoa 4: setBuyerProfField, setBuyerProductField,
+//     setCorrupcaoField, setSabotagemField, resetAll().
 //
-//   - Pessoa 2: setAlunoField / setAlunos (setup/alunos/escalação),
-//     integração com persistence.ts (usar `replaceState` para repor o
-//     STATE inteiro ao carregar um .json ou ao importar alunos do Excel).
-//   - Pessoa 3: setSmField, setOwnerField, setPoField, setDevField.
-//   - Pessoa 4: setBuyerProfField, setBuyerProductField, setCorrupcaoField,
-//     setSabotagemField, e resetAll() (+ a confirmação fica na camada de
-//     UI, ex.: window.confirm antes de chamar resetAll()).
+// Falta ainda (Pessoa 3): setSmField, setOwnerField, setPoField,
+// setDevField — não entregues em nenhum dos três diretórios recebidos,
+// então as abas sm/owner/po/dev continuam como EmConstrucao em App.tsx.
 //
-// Até que os setters específicos existam, `setByPath` (equivalente ao
-// setByPath do app.js original) pode ser usado como ponte genérica.
+// `setByPath` (equivalente ao setByPath do app.js original) continua
+// disponível como ponte genérica para o que ainda não tiver setter
+// dedicado.
 // =====================================================================
 
 export const FILE_NAME_PADRAO = "(nenhum arquivo carregado)";
@@ -64,6 +73,28 @@ export interface SimulationStore {
   setAlunoField: (index: number, field: keyof Aluno, value: Aluno[keyof Aluno]) => void;
   /** Substitui a lista inteira de alunos (usado pela importação via Excel). */
   setAlunos: (alunos: Aluno[]) => void;
+
+  // ---- setters da Pessoa 4 (compradores, corrupção/sabotagem) --------
+  /** Atualiza um campo de uma linha da aba "Compradores (Papel)". */
+  setBuyerProfField: <K extends keyof BuyerProfRow>(index: number, field: K, value: BuyerProfRow[K]) => void;
+  /** Atualiza um campo de uma linha da aba "Compradores (Produto)". */
+  setBuyerProductField: <K extends keyof BuyerProductRow>(
+    index: number,
+    field: K,
+    value: BuyerProductRow[K]
+  ) => void;
+  /** Atualiza um campo do bloco de corrupção (aba "Corrupção & Sabotagem"). */
+  setCorrupcaoField: <K extends keyof Corrupcao>(field: K, value: Corrupcao[K]) => void;
+  /** Atualiza um campo do bloco de sabotagem (aba "Corrupção & Sabotagem"). */
+  setSabotagemField: <K extends keyof Sabotagem>(field: K, value: Sabotagem[K]) => void;
+
+  /**
+   * Equivalente ao handleReset() do app.js original: repõe todo o
+   * `data` para o estado inicial (empresas padrão) e limpa a aba/arquivo
+   * atuais. A confirmação (window.confirm) fica a cargo de quem chama
+   * — ver TopBar/App.tsx.
+   */
+  resetAll: () => void;
 }
 
 export const useSimulationStore = create<SimulationStore>()(
@@ -151,12 +182,6 @@ export const useSimulationStore = create<SimulationStore>()(
         set((state) => {
           const aluno = state.data.alunos[index];
           if (!aluno) return;
-          // Equivalente ao setByPath(`alunos.${i}.${field}`, value) do
-          // app.js original: apenas grava o valor. Quando o papel não usa
-          // mais empresa/time, o app.js original simplesmente para de
-          // renderizar o <select> correspondente (ver AlunoRow em
-          // AlunosTab.tsx) — os valores antigos ficam no estado, sem uso,
-          // até o papel voltar a precisar deles.
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (aluno as any)[field] = value;
         }),
@@ -164,6 +189,33 @@ export const useSimulationStore = create<SimulationStore>()(
       setAlunos: (alunos) =>
         set((state) => {
           state.data.alunos = alunos;
+        }),
+
+      setBuyerProfField: (index, field, value) =>
+        set((state) => {
+          state.data.buyerProf[index][field] = value;
+        }),
+
+      setBuyerProductField: (index, field, value) =>
+        set((state) => {
+          state.data.buyerProduct[index][field] = value;
+        }),
+
+      setCorrupcaoField: (field, value) =>
+        set((state) => {
+          state.data.corrupcao[field] = value;
+        }),
+
+      setSabotagemField: (field, value) =>
+        set((state) => {
+          state.data.sabotagem[field] = value;
+        }),
+
+      resetAll: () =>
+        set((state) => {
+          state.data = buildInitialData(EMPRESA_A_PADRAO, EMPRESA_B_PADRAO);
+          state.tab = "setup";
+          state.fileName = FILE_NAME_PADRAO;
         }),
     })),
     {

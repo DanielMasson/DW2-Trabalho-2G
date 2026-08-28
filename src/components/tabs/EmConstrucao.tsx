@@ -4,10 +4,9 @@ interface EmConstrucaoProps {
 
 /**
  * Painel provisório mostrado para qualquer aba cujo componente real
- * ainda não foi registrado em App.tsx -> TAB_PANELS. Cada pessoa deve
- * substituir a entrada correspondente pelo componente de verdade
- * (ex.: TAB_PANELS.sm = ScrumMasterTab) — não é necessário mexer neste
- * arquivo nem no restante da App.
+ * ainda não foi registrado em App.tsx -> TAB_PANELS. Após o merge, ainda
+ * cobre sm/owner/po/dev (Pessoa 3) — não entregues em nenhuma das cópias
+ * recebidas (ver useSimulationStore.ts, comentário de topo).
  */
 export function EmConstrucao({ titulo }: EmConstrucaoProps) {
   return (

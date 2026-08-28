@@ -2,9 +2,7 @@ import { useSimulationStore } from "@/store/useSimulationStore";
 
 interface TopBarProps {
   /**
-   * Handlers injetados pela App. Ficam opcionais aqui porque a lógica de
-   * fato (export/import de .json, reset com confirmação) pertence a
-   * outras frentes:
+   * Handlers injetados pela App.
    *   - onSave / onLoad -> Pessoa 2 (lib/persistence.ts)
    *   - onReset         -> Pessoa 4 (resetAll() no store + confirm())
    * Enquanto não estiverem prontos, os botões ficam desabilitados.
