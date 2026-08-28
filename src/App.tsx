@@ -1,10 +1,14 @@
-import { useEffect } from "react";
-import type { ComponentType } from "react";
+import { useEffect, useRef } from "react";
+import type { ChangeEvent, ComponentType } from "react";
 
 import { TopBar } from "@/components/TopBar";
 import { TabsBar } from "@/components/TabsBar";
 import { EmConstrucao } from "@/components/tabs/EmConstrucao";
+import { AlunosTab } from "@/components/tabs/AlunosTab";
+import { EscalacaoTab } from "@/components/tabs/EscalacaoTab";
+import { SetupTab } from "@/components/tabs/SetupTab";
 import { TAB_LIST } from "@/data/constants";
+import { loadStateFromFile, saveStateToFile } from "@/lib/persistence";
 import { useSimulationStore } from "@/store/useSimulationStore";
 import type { TabKey } from "@/types";
 
@@ -20,15 +24,15 @@ import type { TabKey } from "@/types";
 //   sm: ScrumMasterTab,
 //
 // Responsáveis por aba, conforme Divisao_Plano_Migracao_React.md:
-//   setup, alunos, escalacao       -> Pessoa 2
+//   setup, alunos, escalacao       -> Pessoa 2 (ENTREGUE)
 //   sm, owner, po, dev             -> Pessoa 3
 //   buyerProf, buyerProduct,
 //   corrupsab, result              -> Pessoa 4
 // =====================================================================
 const TAB_PANELS: Partial<Record<TabKey, ComponentType>> = {
-  // setup: SetupTab,
-  // alunos: AlunosTab,
-  // escalacao: EscalacaoTab,
+  setup: SetupTab,
+  alunos: AlunosTab,
+  escalacao: EscalacaoTab,
   // sm: ScrumMasterTab,
   // owner: OwnerTab,
   // po: ProductOwnerTab,
@@ -53,17 +57,49 @@ function PanelWrap() {
 
 export default function App() {
   const fontScale = useSimulationStore((s) => s.data.meta.fontScale);
+  const data = useSimulationStore((s) => s.data);
+  const replaceState = useSimulationStore((s) => s.replaceState);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Equivalente ao applyFontScale() do app.js original.
   useEffect(() => {
     document.documentElement.style.fontSize = `${fontScale}px`;
   }, [fontScale]);
 
+  // ---- Salvar/Carregar .json (Pessoa 2 — lib/persistence.ts) ----------
+  function handleSave() {
+    saveStateToFile(data);
+  }
+
+  function handleLoadClick() {
+    fileInputRef.current?.click();
+  }
+
+  async function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    try {
+      const { data: loaded, fileName } = await loadStateFromFile(file);
+      replaceState(loaded, fileName);
+    } catch {
+      alert("Não foi possível ler este arquivo. Verifique se é um .json válido gerado por este painel.");
+    }
+  }
+
   return (
     <>
       <TopBar
-        // TODO(Pessoa 2): onSave={handleSave} / onLoad={handleLoadFile} vindos de lib/persistence.ts
+        onSave={handleSave}
+        onLoad={handleLoadClick}
         // TODO(Pessoa 4): onReset={() => { if (confirm("...")) resetAll(); }}
+      />
+      <input
+        type="file"
+        accept=".json"
+        ref={fileInputRef}
+        style={{ display: "none" }}
+        onChange={handleFileChange}
       />
       <TabsBar />
       <div className="wrap">
