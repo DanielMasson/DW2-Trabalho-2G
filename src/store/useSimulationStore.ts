@@ -8,9 +8,13 @@ import type {
   BuyerProductRow,
   BuyerProfRow,
   Corrupcao,
+  DevRow,
   Meta,
+  OwnerRow,
+  PoRow,
   Sabotagem,
   SimulationState,
+  SmRow,
   TabKey,
   Weights,
 } from "@/types";
@@ -21,12 +25,10 @@ import type {
 // MERGE: este arquivo consolida os setters genéricos (Pessoa 1) com os
 // específicos entregues por:
 //   - Pessoa 2: setAlunoField / setAlunos (setup/alunos/escalação).
+//   - Pessoa 3: setSmField, setOwnerField, setPoField, setDevField
+//     (papéis internos — sm/owner/po/dev).
 //   - Pessoa 4: setBuyerProfField, setBuyerProductField,
 //     setCorrupcaoField, setSabotagemField, resetAll().
-//
-// Falta ainda (Pessoa 3): setSmField, setOwnerField, setPoField,
-// setDevField — não entregues em nenhum dos três diretórios recebidos,
-// então as abas sm/owner/po/dev continuam como EmConstrucao em App.tsx.
 //
 // `setByPath` (equivalente ao setByPath do app.js original) continua
 // disponível como ponte genérica para o que ainda não tiver setter
@@ -73,6 +75,16 @@ export interface SimulationStore {
   setAlunoField: (index: number, field: keyof Aluno, value: Aluno[keyof Aluno]) => void;
   /** Substitui a lista inteira de alunos (usado pela importação via Excel). */
   setAlunos: (alunos: Aluno[]) => void;
+
+  // ---- setters das abas de papéis internos (Pessoa 3) -----------------
+  /** Atualiza um campo de uma linha da aba "Scrum Master". */
+  setSmField: <K extends keyof SmRow>(index: number, field: K, value: SmRow[K]) => void;
+  /** Atualiza um campo de uma linha da aba "Owner". */
+  setOwnerField: <K extends keyof OwnerRow>(index: number, field: K, value: OwnerRow[K]) => void;
+  /** Atualiza um campo de uma linha da aba "Product Owner". */
+  setPoField: <K extends keyof PoRow>(index: number, field: K, value: PoRow[K]) => void;
+  /** Atualiza um campo de uma linha da aba "Developers". */
+  setDevField: <K extends keyof DevRow>(index: number, field: K, value: DevRow[K]) => void;
 
   // ---- setters da Pessoa 4 (compradores, corrupção/sabotagem) --------
   /** Atualiza um campo de uma linha da aba "Compradores (Papel)". */
@@ -189,6 +201,34 @@ export const useSimulationStore = create<SimulationStore>()(
       setAlunos: (alunos) =>
         set((state) => {
           state.data.alunos = alunos;
+        }),
+
+      setSmField: (index, field, value) =>
+        set((state) => {
+          const row = state.data.sm[index];
+          if (!row) return;
+          row[field] = value;
+        }),
+
+      setOwnerField: (index, field, value) =>
+        set((state) => {
+          const row = state.data.owner[index];
+          if (!row) return;
+          row[field] = value;
+        }),
+
+      setPoField: (index, field, value) =>
+        set((state) => {
+          const row = state.data.po[index];
+          if (!row) return;
+          row[field] = value;
+        }),
+
+      setDevField: (index, field, value) =>
+        set((state) => {
+          const row = state.data.dev[index];
+          if (!row) return;
+          row[field] = value;
         }),
 
       setBuyerProfField: (index, field, value) =>
