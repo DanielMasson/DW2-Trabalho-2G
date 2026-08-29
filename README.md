@@ -1,3 +1,6 @@
+Trabalho DW 2 Trimestre
+Integrantes: Daniel Masson, Gabriela Nietiedt, Ana Luisa, Vanderlei Pittan
+
 # Painel de Avaliação — Simulação Scrum Competitiva (React)
 
 Migração do painel original (HTML/CSS/JS puro) para **Vite + React + JavaScript**.
